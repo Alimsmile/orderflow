@@ -38,6 +38,11 @@ ALLOWED_HOSTS = os.getenv(
 # Application definition
 
 INSTALLED_APPS = [
+    # Other apps
+    'jazzmin',
+    'rest_framework',
+    'drf_spectacular',
+
     # Django apps
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,10 +50,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # Other apps
-    'rest_framework',
-    'drf_spectacular',
 
     # Local apps
     'apps.catalog',
@@ -152,9 +153,42 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
+NAME_PROJECT = "OrderFlow"
+
+# Swagger UI
 SPECTACULAR_SETTINGS = {
-    "TITLE": "OrderFlow API",
+    "TITLE": f"{NAME_PROJECT} API",
     "DESCRIPTION": "API для управления заказами",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+}
+
+JAZZMIN_SETTINGS = {
+    "site_title": f"{NAME_PROJECT}",
+    "site_header": f"{NAME_PROJECT}",
+    "site_brand": f"{NAME_PROJECT}",
+    "welcome_sign": f"Добро пожаловать в {NAME_PROJECT}",
+    "copyright": f"{NAME_PROJECT}",
+
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+
+        "catalog.Category": "fas fa-tags",
+        "catalog.Product": "fas fa-box",
+
+        "orders.Order": "fas fa-shopping-cart",
+        "customers.Customer": "fas fa-user-tie",
+        "imports.Import": "fas fa-file-import",
+    },
+
+    "default_icon_parents": "fas fa-folder",
+    "default_icon_children": "fas fa-circle",
+
+    "related_modal_active": True,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "theme": "flatly",
 }
