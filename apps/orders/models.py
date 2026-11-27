@@ -5,6 +5,8 @@ from apps.catalog.models import Product
 
 
 class Order(models.Model):
+    external_id = models.CharField(max_length=100, unique=True)
+
     customer = models.ForeignKey(
         Customer,
         on_delete=models.PROTECT,
