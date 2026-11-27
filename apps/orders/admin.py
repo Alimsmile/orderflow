@@ -18,7 +18,7 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ("id", "customer", "total_amount")
+    list_display = ("id", "order_date", "customer", "total_amount")
     list_filter = ("customer",)
     search_fields = ("customer__name",)
     list_select_related = ("customer",)
