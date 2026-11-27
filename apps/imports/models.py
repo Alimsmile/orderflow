@@ -8,7 +8,9 @@ class ImportBatch(models.Model):
         COMPLETED = "completed", "Завершён"
         FAILED = "failed", "Ошибка"
 
+    file = models.FileField(upload_to='imports/%Y/%m/%d/',)
     file_name = models.CharField(max_length=255)
+
     status = models.CharField(
         max_length=20,
         choices=Status.choices,
@@ -20,6 +22,7 @@ class ImportBatch(models.Model):
     error_message = models.TextField(blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     completed_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
