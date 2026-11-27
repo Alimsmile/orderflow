@@ -8,8 +8,11 @@ class ImportBatch(models.Model):
         COMPLETED = "completed", "Завершён"
         FAILED = "failed", "Ошибка"
 
+    idempotency_key = models.CharField(max_length=255,unique=True)
+
     file = models.FileField(upload_to='imports/%Y/%m/%d/',)
     file_name = models.CharField(max_length=255)
+    file_hash = models.CharField(max_length=64)
 
     status = models.CharField(
         max_length=20,

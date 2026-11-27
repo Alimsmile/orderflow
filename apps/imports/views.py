@@ -6,7 +6,9 @@ from rest_framework.views import APIView
 from drf_spectacular.utils import extend_schema
 
 from .serializers import ExcelImportSerializer
-from .services import ImportService
+from .services.import_service import ImportService
+
+from apps.imports.exceptions import IdempotencyConflictError
 
 
 class ExcelImportView(APIView):
@@ -19,13 +21,32 @@ class ExcelImportView(APIView):
         responses={201: None},
     )
     def post(self, request):
+        idempotency_key = request.headers.get('Idempotency-Key')
+
+        if not idempotency_key:
+            return Response(
+                {'error': 'Idempotency-Key header is required'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         serializer = ExcelImportSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        file = serializer.validated_data['file']
+        try:
+            batch, created = ImportService.create_import(
+                file=serializer.validated_data['file'],
+                idempotency_key=idempotency_key,
+            )
+        except IdempotencyConflictError as exc:
+            return Response(
+                {'error': str(exc)},
+                status=status.HTTP_409_CONFLICT,
+            )
 
-        batch = ImportService.create_import(
-            serializer.validated_data['file']
+        response_status = (
+            status.HTTP_202_ACCEPTED
+            if created
+            else status.HTTP_200_OK
         )
 
         return Response(
@@ -34,5 +55,5 @@ class ExcelImportView(APIView):
                 'batch_id': str(batch.id),
                 'status': batch.status,
             },
-            status=status.HTTP_202_ACCEPTED,
+            response_status,
         )
