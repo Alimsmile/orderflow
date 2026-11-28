@@ -3,7 +3,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiTypes
 
 from .serializers import ExcelImportSerializer
 from .services.import_service import ImportService
@@ -15,10 +15,24 @@ class ExcelImportView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     @extend_schema(
-        summary='Upload Excel file',
-        description='Upload an Excel file for importing orders.',
+        summary='Загрузка Excel-файла',
+        description='Загрузка Excel-файла с данными заказов для последующего импорта.',
         request=ExcelImportSerializer,
-        responses={201: None},
+        responses={
+            200: None,
+            202: None,
+            400: None,
+            409: None,
+        },
+        parameters=[
+            OpenApiParameter(
+                name='Idempotency-Key',
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.HEADER,
+                required=True,
+                description='Уникальный ключ запроса для предотвращения повторной обработки.',
+            ),
+        ],
     )
     def post(self, request):
         idempotency_key = request.headers.get('Idempotency-Key')
